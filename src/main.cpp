@@ -10,5 +10,6 @@ int main()
     //Mesh::exportVtkFile("cylinder.vtk", std::make_pair(nodes, elts));
 
     FEM fem(0.3, 2.5e11);
-    fem.Run(nodes, elts);
+
+    Mesh::exportUFile("deplacement.txt", fem.Run(nodes, elts));
 }

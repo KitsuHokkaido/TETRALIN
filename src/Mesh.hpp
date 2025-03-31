@@ -16,5 +16,6 @@ public:
 public:
     static EltsNodeData getDataFromMsh(const std::string& filename);
     static void exportVtkFile(const std::string& filename, const EltsNodeData& data);
+    static void exportUFile(const std::string& filename, const Eigen::VectorXd& deplacement);
 };
 }

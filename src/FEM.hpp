@@ -13,13 +13,12 @@ public:
     ~FEM();
 
 public:
-    void Run(const std::vector<Eigen::Vector3d>& coo, 
+    Eigen::VectorXd Run(const std::vector<Eigen::Vector3d>& coo, 
         const std::vector<std::tuple<int, int, int, int>>& elts);
 
 private:
     Eigen::Matrix<double, 12, 12> calcul_Ke(const std::array<Eigen::Vector3d, 4>& coo);
-    Eigen::MatrixXd assemblage_K(const std::vector<Eigen::Vector3d>& coo, 
-        const std::vector<std::tuple<int, int, int, int>>& elts);
+    Eigen::MatrixXd assemblage_K(const std::vector<Eigen::Vector3d>& coo, const std::vector<std::tuple<int, int, int, int>>& elts);
 
 private:
     Eigen::Matrix<double, 9, 12> X; 

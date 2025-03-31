@@ -44,7 +44,6 @@ Mesh::EltsNodeData Mesh::getDataFromMsh(const std::string& filename)
             const unsigned int nbNoeuds = elemNodeTags[i].size() / elemTags[i].size();
             for (size_t j = 0; j < elemNodeTags[i].size(); j+=nbNoeuds)
             {
-                std::cout << elemNodeTags[i][j] - 1 << ", " << elemNodeTags[i][j+1] - 1 << ", " << elemNodeTags[i][j+2] - 1<< ", " << elemNodeTags[i][j+3] - 1 << "\n";
                 elts.emplace_back(std::make_tuple(
                     elemNodeTags[i][j] - 1,
                     elemNodeTags[i][j + 1] - 1,
@@ -54,6 +53,8 @@ Mesh::EltsNodeData Mesh::getDataFromMsh(const std::string& filename)
             }
         }
     }
+
+    gmsh::write("cylinderTest.vtk");
 
     gmsh::finalize();
 
@@ -96,6 +97,18 @@ void Mesh::exportVtkFile(const std::string& filename, const Mesh::EltsNodeData& 
     for(size_t i = 0; i < elts.size(); ++i)
     {
         file << "10\n";
+    }
+}
+
+void Mesh::exportUFile(const std::string& filename, const Eigen::VectorXd& deplacement)
+{
+    std::ofstream file(filename);
+    
+    file << deplacement.size() << "\n";
+
+    for(size_t i = 0; i < deplacement.size()/3; i+=3)
+    {
+        file << deplacement[i] << " " << deplacement[i + 1] << " " << deplacement[i + 2] << "\n";
     }
 }
 

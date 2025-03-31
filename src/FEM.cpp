@@ -35,15 +35,35 @@ FEM::FEM(double v, double E):
 }
 
 FEM::~FEM()
-{
+{}
 
-}
-
-void FEM::Run(const std::vector<Eigen::Vector3d>& coo, 
+Eigen::VectorXd FEM::Run(const std::vector<Eigen::Vector3d>& coo, 
     const std::vector<std::tuple<int, int, int, int>>& elts)
 {
     Eigen::MatrixXd K = assemblage_K(coo, elts);
 
+    const unsigned int K_size = coo.size()*3;
+
+    Eigen::VectorXd F(K_size);
+    
+    for(size_t i = 0; i < K_size; i+=3)
+    {
+        F(i+2) = -9.81;
+    }
+
+    std::array<size_t, 10> cond_limit = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for (const auto& elt: cond_limit)
+    {
+        for(size_t i = 0; i < 3; ++i)
+        {
+            K.row(elt + i).setZero();
+            K.col(elt + i).setZero();
+            K(elt + i, elt + i) = 1;
+        }
+    }
+
+    return K.colPivHouseholderQr().solve(F);
 }
 
 Eigen::Matrix<double, 12, 12> FEM::calcul_Ke(const std::array<Eigen::Vector3d, 4>& coo)
@@ -75,8 +95,7 @@ Eigen::Matrix<double, 12, 12> FEM::calcul_Ke(const std::array<Eigen::Vector3d, 4
     return (0.16666666666)*(std::abs(J.determinant()) * B.transpose() * D * B);
 }
 
-Eigen::MatrixXd FEM::assemblage_K(const std::vector<Eigen::Vector3d>& coo, 
-    const std::vector<std::tuple<int, int, int, int>>& elts)
+Eigen::MatrixXd FEM::assemblage_K(const std::vector<Eigen::Vector3d>& coo, const std::vector<std::tuple<int, int, int, int>>& elts)
 {
     Eigen::MatrixXd K = Eigen::MatrixXd::Zero(coo.size() * 3, coo.size() * 3);
     for(const auto& elt: elts)

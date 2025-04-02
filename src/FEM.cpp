@@ -44,14 +44,14 @@ Eigen::VectorXd FEM::Run(const std::vector<Eigen::Vector3d>& coo,
 
     const unsigned int K_size = coo.size()*3;
 
-    Eigen::VectorXd F(K_size);
+    Eigen::VectorXd F = Eigen::VectorXd::Zero(K_size);
     
     for(size_t i = 0; i < K_size; i+=3)
     {
-        F(i+2) = -9.81;
+        F(i) = -9.81;
     }
 
-    std::array<size_t, 10> cond_limit = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::array<size_t, 12> cond_limit = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     for (const auto& elt: cond_limit)
     {
@@ -60,6 +60,7 @@ Eigen::VectorXd FEM::Run(const std::vector<Eigen::Vector3d>& coo,
             K.row(elt + i).setZero();
             K.col(elt + i).setZero();
             K(elt + i, elt + i) = 1;
+            F(elt + i) = 0;
         }
     }
 
@@ -89,8 +90,6 @@ Eigen::Matrix<double, 12, 12> FEM::calcul_Ke(const std::array<Eigen::Vector3d, 4
     J_tot.block<3, 3>(6, 6) = J_inv;
 
     Eigen::MatrixXd B = A * J_tot * X;
-    
-    std::cout << std::abs(J.determinant()) << std::endl;
 
     return (0.16666666666)*(std::abs(J.determinant()) * B.transpose() * D * B);
 }

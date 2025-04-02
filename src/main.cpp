@@ -11,5 +11,7 @@ int main()
 
     FEM fem(0.3, 2.5e11);
 
-    Mesh::exportUFile("deplacement.txt", fem.Run(nodes, elts));
+    Eigen::VectorXd U = fem.Run(nodes, elts);
+
+    Mesh::exportUFile("deplacement_cylinder.vtk", U);
 }
